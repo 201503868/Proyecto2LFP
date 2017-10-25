@@ -55,6 +55,7 @@
             this.label_tokens = new System.Windows.Forms.Label();
             this.label_errores = new System.Windows.Forms.Label();
             this.boton_analisis = new System.Windows.Forms.Button();
+            this.jugarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,7 +66,8 @@
             this.archivoToolStripMenuItem,
             this.ejecutarToolStripMenuItem,
             this.exportarToolStripMenuItem,
-            this.acercaDeToolStripMenuItem});
+            this.acercaDeToolStripMenuItem,
+            this.jugarToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(517, 24);
@@ -333,6 +335,16 @@
             this.boton_analisis.UseVisualStyleBackColor = true;
             this.boton_analisis.Click += new System.EventHandler(this.boton_analisis_Click);
             // 
+            // jugarToolStripMenuItem
+            // 
+            this.jugarToolStripMenuItem.BackColor = System.Drawing.Color.Chocolate;
+            this.jugarToolStripMenuItem.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.jugarToolStripMenuItem.Name = "jugarToolStripMenuItem";
+            this.jugarToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.jugarToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.jugarToolStripMenuItem.Text = "Jugar";
+            this.jugarToolStripMenuItem.Click += new System.EventHandler(this.jugarToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -390,6 +402,7 @@
         private System.Windows.Forms.ToolStripMenuItem analisisSintacticoToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem listaDeErroresSintacticosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem jugarToolStripMenuItem;
     }
 }
 

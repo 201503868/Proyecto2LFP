@@ -18,6 +18,7 @@ namespace Proyecto1
     public partial class Funcionalidad : Form
     {
         private List<string> cartas = new List<string>();
+        private List<string> cartas_copia = new List<string>();
         private List<string> musica = new List<string>();
         private int filas;
         private int columnas;
@@ -28,7 +29,7 @@ namespace Proyecto1
         public Funcionalidad(string nickname, string nivel, int filas, int columnas, List<string> cartas, List<string> musica)
         {
             InitializeComponent();
-
+            this.Visible = true;
             TB_Nickname.Text = nickname;
             TB_Nivel.Text = nivel;
             this.cartas = cartas;
@@ -44,48 +45,97 @@ namespace Proyecto1
                     disponibilidad[i, j] = true;
                 }
             }
-            if(filas > 0 && columnas > 0)
+            if((filas > 0 && columnas > 0)&&(filas < 8 && columnas < 8))
             {
-                delegado = new ThreadStart(Reproducir_Musica);
+                /*delegado = new ThreadStart(Reproducir_Musica);
                 hilo = new Thread(delegado);
-                hilo.Start();
+                hilo.Start();*/
+
+                foreach(string card in cartas)
+                {
+                    cartas_copia.Add(card);
+                }
+                Añadir_Cartas();
+            }
+            else if(filas > 7 && columnas > 7){
+                MessageBox.Show("Es en serio, por que tantas? te pondre una de 7x7", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                filas = 7;
+                columnas = 7;
+                foreach (string card in cartas)
+                {
+                    cartas_copia.Add(card);
+                }
                 Añadir_Cartas();
             }
             else
             {
-                MessageBox.Show("Error de numero de filas y columnas", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error de numero de filas y columnas (menor o igual a 0)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } 
         }
 
         public void Añadir_Cartas()
         {
-            
-            int tamaño = panel1.Size.Height/filas;
-            panel1.Width = tamaño * columnas;
+            int tamaño;
+            if (filas > 2)
+            {
+                tamaño = panel1.Size.Height / filas;
+                panel1.Width = tamaño * columnas;
+                panel1.Size = new Size(tamaño * columnas, panel1.Height);
+            }
+            else
+            {
+                tamaño = 150;
+                panel1.Width = tamaño * columnas;
+                panel1.Size = new Size(tamaño * columnas, tamaño*filas);
+            }
             Random random = new Random();
             int f1, c1, f2, c2;
 
             while (true)
             {
-                f1 = random.Next(0, filas - 1);
-                f2 = random.Next(0, filas - 1);
-                c1 = random.Next(0, columnas - 1);
-                c2 = random.Next(0, columnas - 1);
+                random = new Random();
+                f1 = random.Next(0, filas);
+                f2 = random.Next(0, filas);
+                random = new Random();
+                c1 = random.Next(0, columnas);
+                c2 = random.Next(0, columnas);
 
-                if (cartas.Count == 0)
+                if (Disponibilidad())
                 {
                     break;
                 }
 
+                if (cartas_copia.Count ==0)
+                {
+                    foreach(string cr in cartas)
+                    {
+                        cartas_copia.Add(cr);
+                    }
+                }
+
                 if (disponibilidad[f1,c1] && disponibilidad[f2, c2] && (c1!=c2 || f1 != f2))
                 {
-                    string link = cartas.First();
-                    cartas.RemoveAt(0);
-                    Posicionar_Cartas(f1*tamaño, c1*tamaño, tamaño, link);
-                    Posicionar_Cartas(f2 * tamaño, c2 * tamaño, tamaño, link);
+                    string link = cartas_copia.First().Split(',')[1];
+                    cartas_copia.RemoveAt(0);
+                    Posicionar_Cartas(c1*tamaño, f1*tamaño, tamaño, link);
+                    Posicionar_Cartas(c2 * tamaño, f2 * tamaño, tamaño, link);
+                    disponibilidad[f1, c1] = false;
+                    disponibilidad[f2, c2] = false;
                 }
 
             }
+        }
+
+        public bool Disponibilidad()
+        {
+            foreach(bool valor in disponibilidad)
+            {
+                if (valor)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void Posicionar_Cartas(int posX, int posY, int tamaño, string link)
@@ -95,8 +145,17 @@ namespace Proyecto1
             boton.Size = new Size(tamaño, tamaño);
             try
             {
-                redimensionar(link, tamaño);
-                boton.Image = Image.FromFile(link);
+                Image img = redimensionar(link, tamaño);
+                if(img == null)
+                {
+                    boton.Image = Image.FromFile(link);
+                }
+                else
+                {
+                    boton.Image = img;
+                }
+                
+                boton.ImageAlign = ContentAlignment.MiddleCenter;
             }
             catch(Exception ex)
             {
@@ -105,7 +164,7 @@ namespace Proyecto1
             panel1.Controls.Add(boton);
         }
 
-        public static void redimensionar(string link, int tamaño)
+        public static Image redimensionar(string link, int tamaño)
         {
             try
             {
@@ -113,69 +172,24 @@ namespace Proyecto1
                 Bitmap vieja = new Bitmap(stream);
                 Size size = new Size(tamaño, tamaño);
 
-                int alto_vieja = vieja.Width;
-                int ancho_vieja = vieja.Height;
+                var radio = Math.Max((double)tamaño/size.Width, (double)tamaño/size.Height);
 
-                float proporcion = 0;
-                float proporcionH = 0;
-                float proporcionW = 0;
+                var ancho = (int)(size.Width * radio);
+                var alto = (int)(size.Height * radio);
 
-                proporcionH = ((float)size.Height / (float)alto_vieja);
-                proporcionW = ((float)size.Width / (float)ancho_vieja);
+                var nueva = new Bitmap(ancho, alto);
 
-                if(proporcionH < proporcionW)
-                {
-                    proporcion = proporcionH;
-                }
-                else
-                {
-                    proporcion = proporcionW;
-                }
-
-                int ancho_nueva = (int)(ancho_vieja * proporcion);
-                int alto_nueva = (int)(alto_vieja * proporcion);
-
-                Bitmap nueva = new Bitmap(ancho_nueva, alto_nueva);
-                Graphics graficos = Graphics.FromImage((Image)nueva);
-                graficos.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                graficos.DrawImage(vieja, 0, 0, ancho_nueva, alto_nueva);
-                graficos.Dispose();
-
-                ImageCodecInfo ici = GetEncoderInfo("image/jpeg");
-                EncoderParameter calidad = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 99L);
-                EncoderParameters eps = new EncoderParameters(1);
-                eps.Param[0] = calidad;
-                nueva.Save(link, ici, eps);
-
-                vieja.Dispose();
-                stream.Close();
-                stream.Dispose();
-                nueva.Dispose();
-                graficos.Dispose();
-
+                Graphics.FromImage(nueva).DrawImage(vieja, 0, 0, ancho, alto);
+                Bitmap final = new Bitmap(nueva);
+                return (Image)final;
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.ToString());
+                return null;
             }
         }
-
-        private static ImageCodecInfo GetEncoderInfo(string v)
-        {
-            int j;
-            ImageCodecInfo[] encoders;
-            encoders = ImageCodecInfo.GetImageEncoders();
-
-            for(j = 0; j<encoders.Length; ++j)
-            {
-                if(encoders[j].MimeType == v)
-                {
-                    return encoders[j];
-                }
-            }
-            return null;
-        }
-
+        
         private void Reproducir_Musica()
         {
             while (musica.Count != 0)

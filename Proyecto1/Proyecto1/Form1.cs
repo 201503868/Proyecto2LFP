@@ -33,6 +33,7 @@ namespace Proyecto1
         private Boolean permiso = true;
         private Boolean bandera = true;
         private Boolean ids8 = true;
+        private bool jugar = false;
         private int contador_tokens = 0;
         private int contador_errores = 0;
         
@@ -58,6 +59,7 @@ namespace Proyecto1
             columna = 0;
             lexema = "";
             permiso = true;
+            jugar = false;
             contador_errores = 0;
             contador_tokens = 0;
 
@@ -1067,11 +1069,13 @@ namespace Proyecto1
                 sintacticos = asin.Devolver_Errores();
                 if (sintacticos != null)
                 {
+                    jugar = false;
                     label_errores.Text = sintacticos.Count + "" ;
                     MessageBox.Show("Analisis Sintactico Realizado Con Errores", "Analisis Sintactico", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
+                    jugar = true;
                     label_errores.Text = "0";
                     MessageBox.Show("Analisis Sintactico Realizado Sin Errores", "Analisis Sintactico", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -1142,6 +1146,14 @@ namespace Proyecto1
             else
             {
                 MessageBox.Show("No Hay Errores Que Reportar", "Error de Reporte", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        private void jugarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (asin != null && jugar)
+            {
+                Datos datos = new Datos(asin.Dar_Usuarios(), asin.Dar_Cartas(), asin.Dar_Musica(), asin.Niveles);
             }
         }
     }

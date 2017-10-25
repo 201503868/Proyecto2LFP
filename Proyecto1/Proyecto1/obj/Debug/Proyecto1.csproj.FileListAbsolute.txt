@@ -7,3 +7,7 @@ C:\Users\Leo\documents\visual studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug
 C:\Users\Leo\documents\visual studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug\Proyecto1.csproj.GenerateResource.Cache
 C:\Users\Leo\documents\visual studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug\Proyecto1.exe
 C:\Users\Leo\documents\visual studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug\Proyecto1.pdb
+C:\Users\Leo\Documents\Visual Studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug\Interop.WMPLib.dll
+C:\Users\Leo\Documents\Visual Studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug\Proyecto1.csproj.ResolveComReference.cache
+C:\Users\Leo\Documents\Visual Studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug\Proyecto1.Datos.resources
+C:\Users\Leo\Documents\Visual Studio 2017\Projects\Proyecto1\Proyecto1\obj\Debug\Proyecto1.Funcionalidad.resources

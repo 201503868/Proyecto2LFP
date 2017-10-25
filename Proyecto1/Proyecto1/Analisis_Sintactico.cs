@@ -12,15 +12,17 @@ namespace Proyecto1
         private LinkedList<Token> tokens;
         private LinkedList<Error> errores = new LinkedList<Error>();
         private LinkedList<string> log = new LinkedList<string>();
-        private List<string> usuarios = new List<string>();
-        private List<string> musica = new List<string>();
-        private List<string> cartas = new List<string>();
-        private string[] niveles = {"Facil[2x2]","Intermedio[3x4]","Dificil[4x4]"};
+        private List<string> usuarios = new List<string>(); //ya
+        private List<string> musica = new List<string>(); //ya
+        private List<string> cartas = new List<string>(); //ya
+        private string[] niveles = {"Facil[2x2]","Intermedio[3x4]","Dificil[4x4]"}; //ya
         private string error_ejecucion;
         private Error error_sintactico;
         private Token preanalisis;
         private bool exito = true;
         private bool opcional = true;
+        private bool usuario = true;
+        private bool es_carta = true;
         private string camino = "";
         private string token_temporal = "";
         private string card = "";
@@ -46,6 +48,7 @@ namespace Proyecto1
 
         public bool Exito { get => exito; set => exito = value; }
         internal Error Error_sintactico { get => error_sintactico; set => error_sintactico = value; }
+        public string[] Niveles { get => niveles; set => niveles = value; }
 
         public LinkedList<Error> Devolver_Errores()
         {
@@ -59,6 +62,43 @@ namespace Proyecto1
                 return copia;
             }
             return null;
+        }
+
+        public List<string> Dar_Usuarios()
+        {
+            List<string> copia = new List<string>();
+
+            foreach(string valor in usuarios)
+            {
+                copia.Add(valor);
+            }
+            if(copia.Count == 0)
+            {
+                copia.Add("Anonimo");
+            }
+            return copia;
+        }
+
+        public List<string> Dar_Musica()
+        {
+            List<string> copia = new List<string>();
+
+            foreach (string valor in musica)
+            {
+                copia.Add(valor);
+            }
+            return copia;
+        }
+
+        public List<string> Dar_Cartas()
+        {
+            List<string> copia = new List<string>();
+
+            foreach (string valor in cartas)
+            {
+                copia.Add(valor);
+            }
+            return copia;
         }
 
         private bool Parea(string terminal, string siguiente, string siguiente2)
@@ -540,23 +580,26 @@ namespace Proyecto1
                 {
                     case "Tk_FACIL":
                         Parea("Tk_FACIL","Tk_]","Tk_=");
+                        niveles[0] = "Facil[";
                         if (!Parea("Tk_]", "Tk_=", "Tk_[")) { break; }
                         if (!Parea("Tk_=", "Tk_[", "Tk_Entero,Tk_Decimal")) { break; }
-                        ASIG();
+                        ASIG(0);
                         RBNIVELES();
                         break;
                     case "Tk_INTERMEDIO":
                         Parea("Tk_INTERMEDIO", "Tk_]", "Tk_=");
+                        niveles[1] = "Intermedio[";
                         if (!Parea("Tk_]", "Tk_=", "Tk_[")) { break; }
                         if (!Parea("Tk_=", "Tk_[", "Tk_Entero,Tk_Decimal")) { break; }
-                        ASIG();
+                        ASIG(1);
                         RBNIVELES();
                         break;
                     case "Tk_DIFICIL":
                         Parea("Tk_DIFICIL","Tk_]", "Tk_=");
+                        niveles[2] = "Dificil[";
                         if (!Parea("Tk_]", "Tk_=", "Tk_[")) { break; }
                         if (!Parea("Tk_=", "Tk_[", "Tk_Entero,Tk_Decimal")) { break; }
-                        ASIG();
+                        ASIG(2);
                         RBNIVELES();
                         break;
                     default:
@@ -587,23 +630,26 @@ namespace Proyecto1
                 {
                     case "Tk_FACIL":
                         Parea("Tk_FACIL", "Tk_]", "Tk_=");
+                        niveles[0] = "Facil[";
                         if (!Parea("Tk_]", "Tk_=", "Tk_[")) { break; }
                         if (!Parea("Tk_=", "Tk_[", "Tk_Entero,Tk_Decimal")) { break; }
-                        ASIG();
+                        ASIG(0);
                         RBNIVELES();
                         break;
                     case "Tk_INTERMEDIO":
                         Parea("Tk_INTERMEDIO", "Tk_]", "Tk_=");
+                        niveles[1] = "Intermedio[";
                         if (!Parea("Tk_]", "Tk_=", "Tk_[")) { break; }
                         if (!Parea("Tk_=", "Tk_[", "Tk_Entero,Tk_Decimal")) { break; }
-                        ASIG();
+                        ASIG(1);
                         RBNIVELES();
                         break;
                     case "Tk_DIFICIL":
                         Parea("Tk_DIFICIL", "Tk_]", "Tk_=");
+                        niveles[2] = "Dificil[";
                         if (!Parea("Tk_]", "Tk_=", "Tk_[")) { break; }
                         if (!Parea("Tk_=", "Tk_[", "Tk_Entero,Tk_Decimal")) { break; }
-                        ASIG();
+                        ASIG(2);
                         RBNIVELES();
                         break;
                     default:
@@ -613,15 +659,15 @@ namespace Proyecto1
             }
         }
 
-        private void ASIG()
+        private void ASIG(int indice)
         {
             while (exito)
             {
                 if (!Parea("Tk_[", "Tk_Entero,Tk_Decimal", "Tk_X")) { break; }
-                NUM();
-                if (!Parea("Tk_X", "Tk_Entero,Tk_Decimal", "Tk_]")) { break; }
-                NUM();
-                if (!Parea("Tk_]", "Tk_;", "Tk_[")) { break; }
+                NUM(indice);
+                if (!Parea("Tk_X", "Tk_Entero,Tk_Decimal", "Tk_]")) { break; } else { niveles[indice] += "x"; }
+                NUM(indice);
+                if (!Parea("Tk_]", "Tk_;", "Tk_[")) { break; } else { niveles[indice] += "]"; }
                 if (!Parea("Tk_;", "Tk_[", "Tk_/,Tk_FACIL,Tk_INTERMEDIO,Tk_DIFICIL")) { break; }
                 break;
             }
@@ -631,6 +677,7 @@ namespace Proyecto1
         {
             while (exito)
             {
+                es_carta = false;
                 if (!Parea("Tk_[", "Tk_RUTA", "Tk_]")) { break; }
                 RUTA();
                 BSONIDOP();
@@ -669,6 +716,11 @@ namespace Proyecto1
                 if (!Parea("Tk_]","Tk_=","Tk_[")) { break; }
                 if (!Parea("Tk_=","Tk_[","Tk_Ruta")) { break; }
                 if (!Parea("Tk_[","Tk_Ruta","Tk_]")) { break; }
+                else
+                {
+                    if (es_carta) { cartas[cartas.Count - 1] += "," + preanalisis.getLexema().Replace('"', ' ').Trim(); }
+                    else { musica.Add(preanalisis.getLexema().Replace('"', ' ').Trim());}
+                }
                 if (!Parea("Tk_Ruta","Tk_]","Tk_;")) { break; }
                 if (!Parea("Tk_]","Tk_;","Tk_[")) { break; }
                 if (!Parea("Tk_;","Tk_[","Tk_Ruta,Tk_/")) { break; }
@@ -676,16 +728,18 @@ namespace Proyecto1
             }
         }
 
-        private void NUM()
+        private void NUM(int indice)
         {
             if (exito)
             {
                 switch (preanalisis.getToken())
                 {
                     case "Tk_Entero":
+                        niveles[indice] += preanalisis.getLexema().Replace('"', ' ').Trim();
                         Parea("Tk_Entero","Tk_X,Tk_]","Tk_Entero,Tk_Decimal,Tk_;");
                         break;
                     case "Tk_Decimal":
+                        niveles[indice] += (int)Convert.ToDouble(preanalisis.getLexema().Replace("\"", "").Replace(".",","));
                         Parea("Tk_Decimal", "Tk_X,Tk_]", "Tk_Entero,Tk_Decimal,Tk_;");
                         break;
                     default:
@@ -702,6 +756,7 @@ namespace Proyecto1
             {
                 //MessageBox.Show("Llego a usuarios");
                 //if (!Parea("Tk_USUARIOS","Tk_]","[")) { break; }
+                usuario = true;
                 if (!Parea("Tk_]","Tk_[","Tk_NOMBRE")) { break; }
                 BUSUARIOS();
                 if (!Parea("Tk_/","Tk_USUARIOS","Tk_]")) { break; }
@@ -754,7 +809,12 @@ namespace Proyecto1
                 if (!Parea("Tk_]","Tk_=","Tk_[")) { break; }
                 if (!Parea("Tk_=","Tk_[","Tk_Id")) { break; }
                 if (!Parea("Tk_[","Tk_Id","Tk_]")) { break; }
-                if (!Parea("Tk_Id","Tk_]","Tk_;")) { break; }
+                else
+                {
+                    if (usuario){usuarios.Add(preanalisis.getLexema().Replace('"',' ').Trim());}
+                    else { cartas.Add(preanalisis.getLexema().Replace('"', ' ').Trim()); }
+                }
+                if (!Parea("Tk_Id","Tk_]","Tk_;")) { break; } 
                 if (!Parea("Tk_]","Tk_;","Tk_[")) { break; }
                 if (!Parea("Tk_;","Tk_[","Tk_NOMBRE,Tk/")) { break; }
                 break;
@@ -766,6 +826,8 @@ namespace Proyecto1
             while (exito)
             {
                 //if (!Parea("Tk_CARTA","Tk_]","Tk_[")) { break; }
+                usuario = false;
+                es_carta = true;
                 if (!Parea("Tk_]","Tk_[","Tk_NOMBRE,Tk_RUTA")) { break; }
                 BCARTA();
                 if (!Parea("Tk_[", "Tk_/", "Tk_CARTA")) { break; }
